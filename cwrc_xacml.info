@@ -1,0 +1,8 @@
+name = CWRC XACML Modifications
+description = Breaks the XACML editor into three dimensions using the og_global_role module.
+core = 7.x
+
+dependencies[] = og_global_roles
+dependencies[] = islandora_xacml_editor
+dependencies[] = chosen
+dependencies[] = realname
