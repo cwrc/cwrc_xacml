@@ -63,9 +63,15 @@ function cwrc_xacml_form_islandora_xacml_editor_form_alter(&$form, &$form_state)
   );
 
   // Add group access widets.
-  $form['access']['groups'] = array('#default_value' => $form['access']['roles']['#default_value']) + $group_widget;
-  $form['manage']['groups'] = array('#default_value' => $form['manage']['roles']['#default_value']) + $group_widget;
-  $form['dsid_mime']['groups'] = array('#default_value' => $form['dsid_mime']['roles']['#default_value']) + $group_widget;
+  $form['access']['groups'] = array_merge(array(
+    '#default_value' => $form['access']['roles']['#default_value'],
+  ), $group_widget);
+  $form['manage']['groups'] = array_merge(array(
+    '#default_value' => $form['manage']['roles']['#default_value'],
+  ), $group_widget);
+  $form['dsid_mime']['groups'] = array_merge(array(
+    '#default_value' => $form['dsid_mime']['roles']['#default_value'],
+  ), $group_widget);
 
   // DSID group widget is out of order.
   $form['dsid_mime']['users']['#weight'] = -3;
