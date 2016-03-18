@@ -1,4 +1,10 @@
 <?php
+/**
+ * @file
+ * Code for the CWRC: XACML Modifications feature.
+ */
+
+include_once 'cwrc_xacml.features.inc';
 
 /**
  * Implements hook_form_alter().
