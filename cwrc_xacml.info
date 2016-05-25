@@ -1,8 +1,7 @@
 name = CWRC: XACML Modifications
 description = Breaks the XACML editor into three dimensions using the og_global_role module.
 core = 7.x
-package = Other
-project =  Fetch URL: origin
+package = CWRC
 dependencies[] = chosen
 dependencies[] = ctools
 dependencies[] = features
