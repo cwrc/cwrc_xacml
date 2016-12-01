@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Code for the CWRC: XACML Modifications feature.
@@ -8,26 +9,26 @@ include_once 'cwrc_xacml.features.inc';
 
 /**
  * Implements hook_form_alter().
- *
- * Heavily alters and re-arranges the islandora xacml editor form to be more
- * user friendly and less intimidating.
  */
 function cwrc_xacml_form_islandora_xacml_editor_form_alter(&$form, &$form_state) {
+  // Heavily alters and re-arranges the islandora xacml editor form to be more
+  // user friendly and less intimidating.
+  //
   // Firstly filter out global roles from all "role" select boxes.
   _og_global_roles_filter_select($form['access']['roles']['#options']);
   _og_global_roles_filter_select($form['manage']['roles']['#options']);
   _og_global_roles_filter_select($form['dsid_mime']['roles']['#options']);
 
   // Kill root "tree" variable, we are rearranging things.
-  $form['#tree'] = false;
+  $form['#tree'] = FALSE;
 
   // Chosen-ify the select boxes.
-  $form['access']['users']['#chosen'] = true;
-  $form['access']['roles']['#chosen'] = true;
-  $form['manage']['users']['#chosen'] = true;
-  $form['manage']['roles']['#chosen'] = true;
-  $form['dsid_mime']['users']['#chosen'] = true;
-  $form['dsid_mime']['roles']['#chosen'] = true;
+  $form['access']['users']['#chosen'] = TRUE;
+  $form['access']['roles']['#chosen'] = TRUE;
+  $form['manage']['users']['#chosen'] = TRUE;
+  $form['manage']['roles']['#chosen'] = TRUE;
+  $form['dsid_mime']['users']['#chosen'] = TRUE;
+  $form['dsid_mime']['roles']['#chosen'] = TRUE;
 
   // Override some ajax settings, as they will return null after this.
   if (isset($form['dsid_mime']['rules']['remove_selected'])) {
@@ -56,8 +57,8 @@ function cwrc_xacml_form_islandora_xacml_editor_form_alter(&$form, &$form_state)
   // Iterate over projects and create options.
   $group_widget = array(
     '#type' => 'select',
-    '#multiple' => true,
-    '#chosen' => true,
+    '#multiple' => TRUE,
+    '#chosen' => TRUE,
     '#options' => $group_options,
     '#title' => t('Group access'),
   );
@@ -96,7 +97,7 @@ function cwrc_xacml_form_islandora_xacml_editor_form_alter(&$form, &$form_state)
   $form['manage_fieldset'] = array(
     'manage_enabled' => $form['manage_enabled'],
     // Added tree here, cleaning up some code from islandora xacml.
-    'manage' => $form['manage'] + array('#tree' => true),
+    'manage' => $form['manage'] + array('#tree' => TRUE),
     '#group' => 'cwrc_xacml_vertical_tabs',
     '#type' => 'fieldset',
     '#title' => t('Object management'),
@@ -122,9 +123,13 @@ function cwrc_xacml_form_islandora_xacml_editor_form_alter(&$form, &$form_state)
 }
 
 /**
+ * Form validation handler for islandora_xacml_editor_form().
+ *
  * Our widget is really a wrapper around the "roles" widget, to ensure we get
  * added to the xacml policy and all subsequent batches we need to inject the
  * values directly into the default roles arrays.
+ *
+ * @see cwrc_xacml_form_islandora_xacml_editor_form_alter()
  */
 function cwrc_xacml_form_validate($form, &$form_state) {
   foreach (array('access', 'manage', 'dsid_mime') as $category) {
@@ -136,21 +141,21 @@ function cwrc_xacml_form_validate($form, &$form_state) {
 
 /**
  * Implements hook_library_alter().
- *
- * Adds support for chosen "include_group_label_in_selected" through a variable.
- *
- * NOTE: This doesn't work with the version of chosen that this module downloads
- * you need to manually update chosen to >=v1.4.0 for this to be useful.
  */
 function cwrc_xacml_library_alter(&$libraries, $module) {
+  // Adds support for chosen "include_group_label_in_selected" through a
+  // variable.
+  //
+  // NOTE: This doesn't work with the version of chosen that this module
+  // downloads you need to manually update chosen to >=v1.4.0 for this to be
+  // useful.
   if ($module == 'chosen' && isset($libraries['drupal.chosen'])) {
-    $libraries['drupal.chosen']['js'][0]['data']['chosen']['options']['include_group_label_in_selected'] = (bool) variable_get('chosen_include_group_label_in_selected', true);
+    $libraries['drupal.chosen']['js'][0]['data']['chosen']['options']['include_group_label_in_selected'] = (bool) variable_get('chosen_include_group_label_in_selected', TRUE);
   }
 }
 
 /**
- * Helper function to replace the default XACML options with realnames for the
- * realname module.
+ * Helper to replace XACML options with realnames from the realname module.
  *
  * Uses bulk queries and loaders for as much static caching optimization as
  * possible.
