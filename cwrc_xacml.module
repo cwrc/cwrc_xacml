@@ -8,7 +8,7 @@
 include_once 'cwrc_xacml.features.inc';
 
 /**
- * Implements hook_form_alter().
+ * Implements hook_form_FORM_ID_alter().
  */
 function cwrc_xacml_form_islandora_xacml_editor_form_alter(&$form, &$form_state) {
   // Heavily alters and re-arranges the islandora xacml editor form to be more
