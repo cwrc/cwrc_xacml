@@ -7,6 +7,8 @@
 
 include_once 'cwrc_xacml.features.inc';
 
+/* Hooks. */
+
 /**
  * Implements hook_form_FORM_ID_alter().
  */
@@ -123,6 +125,23 @@ function cwrc_xacml_form_islandora_xacml_editor_form_alter(&$form, &$form_state)
 }
 
 /**
+ * Implements hook_library_alter().
+ */
+function cwrc_xacml_library_alter(&$libraries, $module) {
+  // Adds support for chosen "include_group_label_in_selected" through a
+  // variable.
+  //
+  // NOTE: This doesn't work with the version of chosen that this module
+  // downloads you need to manually update chosen to >=v1.4.0 for this to be
+  // useful.
+  if ($module == 'chosen' && isset($libraries['drupal.chosen'])) {
+    $libraries['drupal.chosen']['js'][0]['data']['chosen']['options']['include_group_label_in_selected'] = (bool) variable_get('chosen_include_group_label_in_selected', TRUE);
+  }
+}
+
+/* Form handlers. */
+
+/**
  * Form validation handler for islandora_xacml_editor_form().
  *
  * Our widget is really a wrapper around the "roles" widget, to ensure we get
@@ -140,19 +159,48 @@ function cwrc_xacml_form_validate($form, &$form_state) {
 }
 
 /**
- * Implements hook_library_alter().
+ * AJAX callback to remove the selected filters from the rules table.
  */
-function cwrc_xacml_library_alter(&$libraries, $module) {
-  // Adds support for chosen "include_group_label_in_selected" through a
-  // variable.
-  //
-  // NOTE: This doesn't work with the version of chosen that this module
-  // downloads you need to manually update chosen to >=v1.4.0 for this to be
-  // useful.
-  if ($module == 'chosen' && isset($libraries['drupal.chosen'])) {
-    $libraries['drupal.chosen']['js'][0]['data']['chosen']['options']['include_group_label_in_selected'] = (bool) variable_get('chosen_include_group_label_in_selected', TRUE);
-  }
+function cwrc_xacml_editor_remove_selected($form, $form_state) {
+  return $form['dsid_mime_fieldset']['dsid_mime']['rules'];
 }
+
+/**
+ * AJAX callback to remove all filters from the rules table.
+ */
+function cwrc_xacml_editor_remove_all($form, $form_state) {
+  return $form['dsid_mime_fieldset']['dsid_mime']['rules'];
+}
+
+/**
+ * AJAX callback to add a DSID Regex to the rules table.
+ */
+function cwrc_xacml_editor_add_dsid_regex_js($form, $form_state) {
+  return $form['dsid_mime_fieldset']['dsid_mime']['rules'];
+}
+
+/**
+ * AJAX callback to add a DSID to the rules table.
+ */
+function cwrc_xacml_editor_add_dsid_js($form, $form_state) {
+  return $form['dsid_mime_fieldset']['dsid_mime']['rules'];
+}
+
+/**
+ * AJAX callback to add a MIME Regex to the rules table.
+ */
+function cwrc_xacml_editor_add_mime_regex_js($form, $form_state) {
+  return $form['dsid_mime_fieldset']['dsid_mime']['rules'];
+}
+
+/**
+ * AJAX callback to add a MIME Type to the rules table.
+ */
+function cwrc_xacml_editor_add_mime_js($form, $form_state) {
+  return $form['dsid_mime_fieldset']['dsid_mime']['rules'];
+}
+
+/* Helper functions. */
 
 /**
  * Helper to replace XACML options with realnames from the realname module.
@@ -222,46 +270,4 @@ function _cwrc_xacml_get_group_options() {
     }
   }
   return $options;
-}
-
-/**
- * AJAX callback to remove the selected filters from the rules table.
- */
-function cwrc_xacml_editor_remove_selected($form, $form_state) {
-  return $form['dsid_mime_fieldset']['dsid_mime']['rules'];
-}
-
-/**
- * AJAX callback to remove all filters from the rules table.
- */
-function cwrc_xacml_editor_remove_all($form, $form_state) {
-  return $form['dsid_mime_fieldset']['dsid_mime']['rules'];
-}
-
-/**
- * AJAX callback to add a DSID Regex to the rules table.
- */
-function cwrc_xacml_editor_add_dsid_regex_js($form, $form_state) {
-  return $form['dsid_mime_fieldset']['dsid_mime']['rules'];
-}
-
-/**
- * AJAX callback to add a DSID to the rules table.
- */
-function cwrc_xacml_editor_add_dsid_js($form, $form_state) {
-  return $form['dsid_mime_fieldset']['dsid_mime']['rules'];
-}
-
-/**
- * AJAX callback to add a MIME Regex to the rules table.
- */
-function cwrc_xacml_editor_add_mime_regex_js($form, $form_state) {
-  return $form['dsid_mime_fieldset']['dsid_mime']['rules'];
-}
-
-/**
- * AJAX callback to add a MIME Type to the rules table.
- */
-function cwrc_xacml_editor_add_mime_js($form, $form_state) {
-  return $form['dsid_mime_fieldset']['dsid_mime']['rules'];
 }
