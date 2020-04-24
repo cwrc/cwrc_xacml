@@ -10,6 +10,32 @@ include_once 'cwrc_xacml.features.inc';
 /* Hooks. */
 
 /**
+ * Implements hook_form_label_alterations().
+ */
+function cwrc_xacml_form_label_alterations(&$form, &$form_state) {
+  global $user;
+  $form['access_enabled']['#title'] = 'Restrictions on objects viewing';
+  $form['access_enabled']['#description'] = 'If restrictions on object viewing are not enabled, the content is public.';
+  $form['manage_enabled']['#title'] = 'Restrictions on object modification';
+  $form['access']['users']['#title'] = 'Users'; 
+  $form['access']['roles']['#title'] = 'Site Roles';
+  $form['access']['#description'] = 'Select the users and/or roles that are allowed to view this object/collection. Go to "Object modification" to allow users/roles to edit the object or manage the collection.';
+  $form['manage']['#title'] = 'Object Modification';
+  $form['manage']['#description'] = 'Select users and roles that are allowed to modify this objects (If a collection, this also includes adding new objects, sharing members, etc.)';
+  $form['dsid_mime']['#title'] = 'Advanced';
+  $form['access']['users']['#weight'] = -1;
+  $form['access']['roles']['#weight'] = 1;
+  $form['manage']['users']['#weight'] = -1;
+  $form['manage']['roles']['#weight'] = 1;
+  $current_username = $user->name;
+  $admin = user_load(1)->name;
+  $default_user = array($current_username, $admin);
+  $form['access']['users']['#default_value'] = $default_user;
+  $form['manage']['users']['#default_value'] = $default_user;
+  $form['dsid_mime']['users']['#default_value'] = $default_user;
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  */
 function cwrc_xacml_form_islandora_xacml_editor_form_alter(&$form, &$form_state) {
@@ -23,6 +49,10 @@ function cwrc_xacml_form_islandora_xacml_editor_form_alter(&$form, &$form_state)
 
   // Kill root "tree" variable, we are rearranging things.
   $form['#tree'] = FALSE;
+
+  // Load label alterations form.
+  cwrc_xacml_form_label_alterations($form, $form_state);
+  // dpm($form);
 
   // Chosen-ify the select boxes.
   $form['access']['users']['#chosen'] = TRUE;
@@ -62,7 +92,7 @@ function cwrc_xacml_form_islandora_xacml_editor_form_alter(&$form, &$form_state)
     '#multiple' => TRUE,
     '#chosen' => TRUE,
     '#options' => $group_options,
-    '#title' => t('Group access'),
+    '#title' => t('Project Roles'),
   );
 
   // Add group access widets.
@@ -78,8 +108,8 @@ function cwrc_xacml_form_islandora_xacml_editor_form_alter(&$form, &$form_state)
 
   // DSID group widget is out of order.
   $form['dsid_mime']['users']['#weight'] = -3;
-  $form['dsid_mime']['roles']['#weight'] = -2;
-  $form['dsid_mime']['groups']['#weight'] = -1;
+  $form['dsid_mime']['groups']['#weight'] = -2;
+  $form['dsid_mime']['roles']['#weight'] = -1;
 
   // Now put stuff into verical tabs.
   $form['cwrc_xacml_vertical_tabs'] = array(
@@ -102,14 +132,14 @@ function cwrc_xacml_form_islandora_xacml_editor_form_alter(&$form, &$form_state)
     'manage' => $form['manage'] + array('#tree' => TRUE),
     '#group' => 'cwrc_xacml_vertical_tabs',
     '#type' => 'fieldset',
-    '#title' => t('Object management'),
+    '#title' => t('Object modification'),
   );
   $form['dsid_mime_fieldset'] = array(
     'dsid_mime_enabled' => $form['dsid_mime_enabled'],
     'dsid_mime' => $form['dsid_mime'],
     '#group' => 'cwrc_xacml_vertical_tabs',
     '#type' => 'fieldset',
-    '#title' => t('DSID and MIME types (advanced)'),
+    '#title' => t('Advanced'),
   );
 
   // Unset un-grouped fields now.
